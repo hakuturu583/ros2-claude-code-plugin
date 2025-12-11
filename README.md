@@ -139,9 +139,11 @@ The plugin automatically generates and updates a `build.sh` script on every run 
 
 ### Features
 
-- **ccache integration**: Automatically sets `CC="ccache gcc"` and `CXX="ccache g++"` for faster recompilation
+- **Smart ccache integration**: Automatically detects and uses ccache if installed
+- **Helpful warnings**: Displays installation instructions if ccache is not found
+- **Works without ccache**: Falls back to normal gcc/g++ if ccache is unavailable
 - **Workspace-aware**: Reads workspace root from `.ros_workspace.txt`
-- **Statistics**: Displays ccache statistics after each build
+- **Statistics**: Displays ccache statistics after each build (when ccache is used)
 - **Standalone usage**: Can be used independently from Claude Code plugin
 
 ### Example usage
@@ -151,15 +153,32 @@ The plugin automatically generates and updates a `build.sh` script on every run 
 ./build.sh --packages-up-to my_package --symlink-install
 
 # The script will:
-# 1. Enable ccache
-# 2. Navigate to workspace root
-# 3. Run: colcon build --packages-up-to my_package --symlink-install
-# 4. Show ccache statistics
+# 1. Check if ccache is installed (shows warning if not found)
+# 2. Enable ccache if available (CC="ccache gcc", CXX="ccache g++")
+# 3. Navigate to workspace root
+# 4. Run: colcon build --packages-up-to my_package --symlink-install
+# 5. Show ccache statistics (if ccache is used)
+```
+
+**Without ccache:**
+```
+WARNING: ccache is not installed!
+ccache significantly speeds up recompilation by caching previous builds.
+
+To install ccache:
+  Ubuntu/Debian: sudo apt install ccache
+  Fedora/RHEL:   sudo dnf install ccache
+  Arch Linux:    sudo pacman -S ccache
+  macOS:         brew install ccache
+
+Continuing without ccache...
 ```
 
 ### Benefits
 
-- **Faster builds**: ccache caches compilation results, speeding up rebuilds significantly
+- **Faster builds**: ccache caches compilation results, speeding up rebuilds significantly (when installed)
+- **Works everywhere**: Falls back gracefully to normal compilation without ccache
+- **User-friendly**: Clear warnings and installation instructions when ccache is missing
 - **Consistent environment**: Same build settings across team members
 - **Easy to use**: Simple wrapper script with helpful error messages
 

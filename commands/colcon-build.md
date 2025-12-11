@@ -93,9 +93,27 @@ Once workspace root is detected:
   # Get the directory where this script is located
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-  # Set ccache environment variables for faster compilation
-  export CC="ccache gcc"
-  export CXX="ccache g++"
+  # Check if ccache is installed
+  if ! command -v ccache &> /dev/null; then
+      echo "WARNING: ccache is not installed!"
+      echo "ccache significantly speeds up recompilation by caching previous builds."
+      echo ""
+      echo "To install ccache:"
+      echo "  Ubuntu/Debian: sudo apt install ccache"
+      echo "  Fedora/RHEL:   sudo dnf install ccache"
+      echo "  Arch Linux:    sudo pacman -S ccache"
+      echo "  macOS:         brew install ccache"
+      echo ""
+      echo "Continuing without ccache..."
+      echo ""
+      # Don't use ccache if not installed
+      USE_CCACHE=false
+  else
+      # Set ccache environment variables for faster compilation
+      export CC="ccache gcc"
+      export CXX="ccache g++"
+      USE_CCACHE=true
+  fi
 
   # Read ROS workspace directory from .ros_workspace.txt
   WORKSPACE_ROOT=$(cat "$SCRIPT_DIR/.ros_workspace.txt")
@@ -103,12 +121,18 @@ Once workspace root is detected:
   # Change to ROS workspace directory
   cd "$WORKSPACE_ROOT"
 
-  # Run colcon build with ccache
-  echo "Building ROS 2 workspace with ccache enabled..."
-  echo "Workspace: $WORKSPACE_ROOT"
-  echo "CC=$CC"
-  echo "CXX=$CXX"
-  echo ""
+  # Run colcon build
+  if [ "$USE_CCACHE" = true ]; then
+      echo "Building ROS 2 workspace with ccache enabled..."
+      echo "Workspace: $WORKSPACE_ROOT"
+      echo "CC=$CC"
+      echo "CXX=$CXX"
+      echo ""
+  else
+      echo "Building ROS 2 workspace..."
+      echo "Workspace: $WORKSPACE_ROOT"
+      echo ""
+  fi
 
   # Check if arguments are provided
   if [ $# -eq 0 ]; then
@@ -132,8 +156,8 @@ Once workspace root is detected:
   echo ""
   echo "Build completed!"
 
-  # Show ccache statistics if ccache is available
-  if command -v ccache &> /dev/null; then
+  # Show ccache statistics if ccache was used
+  if [ "$USE_CCACHE" = true ]; then
       echo ""
       echo "ccache statistics:"
       ccache -s
@@ -237,9 +261,11 @@ Run the colcon build command through the build.sh script with intelligent packag
 - **build.sh script**:
   - Auto-generated and **updated on every run** to ensure latest version
   - Stored in Git repository root
-  - Enables ccache for faster compilation (CC="ccache gcc", CXX="ccache g++")
+  - Automatically detects and uses ccache if installed (CC="ccache gcc", CXX="ccache g++")
+  - Displays warning with installation instructions if ccache not found
+  - Works without ccache (falls back to normal gcc/g++)
   - Reads workspace root from .ros_workspace.txt
-  - Displays ccache statistics after build completion
+  - Displays ccache statistics after build completion (if ccache is used)
   - Added to .gitignore (local configuration)
 - **Intelligent package selection**:
   - `colcon list --names-only` is executed in both current directory and workspace root
