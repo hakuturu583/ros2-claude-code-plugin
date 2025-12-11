@@ -9,7 +9,9 @@ Claude Code plugin for ROS 2 workspace management with colcon build and test aut
 - **Git integration**: Automatically adds generated files to `.gitignore`
 - **Colcon build**: Executes `colcon build` with ccache support via `build.sh`
 - **Colcon test**: Executes `colcon test` with automatic result display via `test.sh`
+- **Test results**: Display detailed test results with `colcon test-result --verbose`
 - **Smart package selection**: Automatically builds/tests only packages in current directory
+- **Directory preservation**: Always returns to original directory after operations
 
 ## Installation
 
@@ -52,6 +54,23 @@ With options:
 /colcon-test --packages-up-to my_package
 /colcon-test --retest-until-pass 3
 ```
+
+### `/colcon-test-result` command
+
+Display detailed test results from the workspace:
+
+```bash
+/colcon-test-result
+```
+
+With options:
+
+```bash
+/colcon-test-result --all
+/colcon-test-result --test-result-base custom_results
+```
+
+**Note**: This command automatically navigates to the workspace root, displays test results, and returns to your original directory.
 
 ### Smart Package Selection
 
@@ -261,6 +280,41 @@ Summary: 15 tests, 0 errors, 0 failures, 0 skipped
 - **Consistent testing**: Same test process across team members
 - **Easy to use**: Simple wrapper script with helpful error messages
 - **Works everywhere**: Requires only colcon and ROS 2 installation
+
+## Additional Commands
+
+### `/colcon-test-result`
+
+Display detailed test results without re-running tests:
+
+```bash
+# From any directory in your Git repository
+/colcon-test-result
+
+# The command will:
+# 1. Navigate to workspace root (from .ros_workspace.txt)
+# 2. Run: colcon test-result --verbose
+# 3. Display detailed test results
+# 4. Return to your original directory
+```
+
+**Key features:**
+- **No directory change**: Returns to original directory after displaying results
+- **Verbose by default**: Shows detailed test output with `--verbose` flag
+- **Flexible options**: Can pass any `colcon test-result` options
+- **Quick access**: View test results from anywhere in your repository
+
+**Example output:**
+```
+Using workspace root from .ros_workspace.txt: /home/user/ros2_ws
+
+build/my_package/test_results/my_package/test_my_node.gtest.xml: 5 tests, 0 errors, 0 failures, 0 skipped
+build/sensor_driver/test_results/sensor_driver/test_driver.gtest.xml: 10 tests, 0 errors, 0 failures, 0 skipped
+
+Summary: 15 tests, 0 errors, 0 failures, 0 skipped
+
+Returned to original directory: /home/user/ros2_ws/src/my_package
+```
 
 ## Requirements
 
