@@ -222,6 +222,7 @@ Before building, copy updated configuration to workspace:
 
 Run the colcon build command through the build.sh script with intelligent package selection:
 
+- Save the **current working directory** to return to after build completion
 - Change to the **Git repository root** directory (where build.sh is located)
 - Determine build command based on user arguments and current directory packages:
 
@@ -245,6 +246,11 @@ Run the colcon build command through the build.sh script with intelligent packag
 
 - Display the output of the build process to the user (including ccache info from build.sh)
 - If build fails, show the error and exit code
+
+### 7. Return to Original Directory
+
+- Change back to the original directory (saved in step 6)
+- Inform user: "Returned to original directory: [original-path]"
 
 **Note**: The build.sh script handles:
 - Setting up ccache for faster compilation (CC="ccache gcc", CXX="ccache g++")

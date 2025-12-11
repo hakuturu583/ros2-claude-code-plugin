@@ -7,11 +7,11 @@ Claude Code plugin for ROS 2 workspace management with colcon build and test aut
 - **Automatic workspace detection**: Finds ROS 2 workspace root by traversing up directories
 - **Workspace tracking**: Creates `.ros_workspace.txt` with workspace root path
 - **Git integration**: Automatically adds generated files to `.gitignore`
-- **Colcon build**: Executes `colcon build` with ccache support via `build.sh`
-- **Colcon test**: Executes `colcon test` with automatic result display via `test.sh`
-- **Test results**: Display detailed test results with `colcon test-result --verbose`
+- **Colcon build**: Executes `colcon build` with ccache support via `build.sh` and returns to original directory
+- **Colcon test**: Executes `colcon test` with automatic result display via `test.sh` and returns to original directory
+- **Test results**: Display detailed test results with `colcon test-result --verbose` and returns to original directory
 - **Smart package selection**: Automatically builds/tests only packages in current directory
-- **Directory preservation**: Always returns to original directory after operations
+- **Directory preservation**: All commands preserve your working directory - no manual `cd` needed
 
 ## Installation
 
@@ -91,6 +91,7 @@ cc
 # Test only this package and dependencies
 /colcon-test
 # Result: colcon test --packages-up-to my_robot_package
+# Note: Automatically returns to ~/ros2_ws/src/my_robot_package after build/test
 ```
 
 **Scenario 2: Working in workspace root**

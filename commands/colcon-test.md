@@ -126,6 +126,7 @@ Find packages in current working directory:
 
 Run the colcon test command through the test.sh script with intelligent package selection:
 
+- Save the **current working directory** to return to after test completion
 - Change to the **Git repository root** directory (where test.sh is located)
 - Determine test command based on user arguments and current directory packages:
 
@@ -149,6 +150,11 @@ Run the colcon test command through the test.sh script with intelligent package 
 
 - Display the output of the test process to the user (including test results from test.sh)
 - If test fails, show the error and exit code
+
+### 6. Return to Original Directory
+
+- Change back to the original directory (saved in step 5)
+- Inform user: "Returned to original directory: [original-path]"
 
 **Note**: The test.sh script handles:
 - Checking for .ros_workspace.txt existence
