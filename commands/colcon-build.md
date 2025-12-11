@@ -21,7 +21,28 @@ First, find the Git repository root directory:
 - Start from current directory and check each parent directory for `.git` directory or file
 - The first directory containing `.git` is the Git repository root
 - If no `.git` found, display error: "Error: Not in a Git repository. Please run this command from within a Git repository."
-- Store this path as the "file operation directory" for all `.ros_workspace.txt` and `.gitignore` operations
+- Store this path as the "file operation directory" for all `.ros_workspace.txt`, `.gitignore`, and `colcon_build_options.yaml` operations
+
+### 0.5. Manage colcon_build_options.yaml
+
+Check and create colcon build options file in Git repository root:
+
+- Check if `colcon_build_options.yaml` exists in the Git repository root
+- If it does NOT exist:
+  - Create `colcon_build_options.yaml` in the Git repository root with default template:
+    ```yaml
+    # Colcon build options for this ROS 2 workspace
+    # This file will be copied to <workspace_root>/colcon.meta before building
+    # See: https://colcon.readthedocs.io/en/released/user/configuration.html
+
+    {
+      "names": {
+      }
+    }
+    ```
+  - Inform user: "Created colcon_build_options.yaml in [git-repo-root] with default template"
+- If it exists:
+  - Inform user: "Found existing colcon_build_options.yaml in [git-repo-root]"
 
 ### 1. Find ROS 2 Workspace Root
 
@@ -54,21 +75,33 @@ Once workspace root is detected (only if file didn't exist):
 
 ### 3. Update .gitignore
 
-Ensure `.ros_workspace.txt` is ignored by git:
+Ensure `.ros_workspace.txt` and `colcon_build_options.yaml` are ignored by git:
 
 - Check if `.gitignore` exists in the **Git repository root** (found in step 0)
 - If `.gitignore` does not exist:
-  - Create `.gitignore` in the **Git repository root** with content: `.ros_workspace.txt`
-  - Inform user: "Created .gitignore in [git-repo-root] and added .ros_workspace.txt"
+  - Create `.gitignore` in the **Git repository root** with content:
+    ```
+    .ros_workspace.txt
+    colcon_build_options.yaml
+    ```
+  - Inform user: "Created .gitignore in [git-repo-root] and added .ros_workspace.txt and colcon_build_options.yaml"
 - If `.gitignore` exists:
   - Read the file and check if `.ros_workspace.txt` is already present
-  - If NOT present:
-    - Append `.ros_workspace.txt` to `.gitignore`
-    - Inform user: "Added .ros_workspace.txt to .gitignore in [git-repo-root]"
-  - If already present:
-    - Inform user: ".ros_workspace.txt already in .gitignore"
+    - If NOT present: Append `.ros_workspace.txt` to `.gitignore`
+  - Check if `colcon_build_options.yaml` is already present
+    - If NOT present: Append `colcon_build_options.yaml` to `.gitignore`
+  - Inform user with appropriate message about what was added
 
-### 4. Execute Colcon Build
+### 4. Copy Build Options to colcon.meta
+
+Before building, copy `colcon_build_options.yaml` to workspace:
+
+- Read the content of `colcon_build_options.yaml` from Git repository root
+- Copy the content to `<workspace_root>/colcon.meta`
+  - Overwrite if `colcon.meta` already exists
+- Inform user: "Copied colcon_build_options.yaml to [workspace-root]/colcon.meta"
+
+### 5. Execute Colcon Build
 
 Run the colcon build command:
 
@@ -81,9 +114,10 @@ Run the colcon build command:
 
 ## Important Notes
 
-- All file operations (creating .ros_workspace.txt, modifying .gitignore) should happen in the **Git repository root** (directory containing .git), not the current working directory or workspace root
+- All file operations (creating .ros_workspace.txt, colcon_build_options.yaml, modifying .gitignore) should happen in the **Git repository root** (directory containing .git), not the current working directory or workspace root
 - The command requires being run from within a Git repository
 - Use absolute paths when writing to .ros_workspace.txt
 - Preserve existing .gitignore content when adding new entries
+- `colcon_build_options.yaml` is copied to `<workspace_root>/colcon.meta` before every build
 - Run colcon build from the workspace root directory (detected automatically)
 - Pass through any arguments the user provides to the colcon build command

@@ -38,11 +38,42 @@ With options:
 **What it does:**
 
 1. Finds Git repository root (directory containing `.git`)
-2. Checks for `.ros_workspace.txt` in Git repo root, or traverses up to find ROS 2 workspace root
+2. Creates/checks `colcon_build_options.yaml` in Git repo root (build configuration)
+3. Checks for `.ros_workspace.txt` in Git repo root, or traverses up to find ROS 2 workspace root
    - Looks for `src/` directory without `package.xml` in parent
-3. Creates `.ros_workspace.txt` in Git repo root (if not exists) with workspace root path
-4. Adds `.ros_workspace.txt` to `.gitignore` in Git repo root (if not already present)
-5. Executes `colcon build` with provided arguments
+4. Creates `.ros_workspace.txt` in Git repo root (if not exists) with workspace root path
+5. Adds `.ros_workspace.txt` and `colcon_build_options.yaml` to `.gitignore` (if not already present)
+6. Copies `colcon_build_options.yaml` to `<workspace_root>/colcon.meta`
+7. Executes `colcon build` with provided arguments
+
+## Build Configuration
+
+The plugin manages build options through `colcon_build_options.yaml` in your Git repository root:
+
+- **Automatic creation**: File is created with default template on first run
+- **Git ignored**: Automatically added to `.gitignore` (local configuration)
+- **Applied before build**: Content is copied to `<workspace_root>/colcon.meta` before each build
+
+### Example `colcon_build_options.yaml`
+
+```yaml
+# Colcon build options for this ROS 2 workspace
+# This file will be copied to <workspace_root>/colcon.meta before building
+# See: https://colcon.readthedocs.io/en/released/user/configuration.html
+
+{
+  "names": {
+    "my_package": {
+      "cmake-args": ["-DCMAKE_BUILD_TYPE=Release"]
+    },
+    "another_package": {
+      "cmake-args": ["-DBUILD_TESTING=OFF"]
+    }
+  }
+}
+```
+
+You can customize this file to set package-specific build options. Changes take effect on the next build.
 
 ## Requirements
 
