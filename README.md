@@ -79,17 +79,21 @@ cc
 2. Creates/checks `colcon_build_options.yaml` in Git repo root (build configuration)
 3. Checks for `.ros_workspace.txt` in Git repo root, or traverses up to find ROS 2 workspace root
    - Looks for `src/` directory without `package.xml` in parent
-4. Creates `.ros_workspace.txt` in Git repo root (if not exists) with workspace root path
-5. Adds `.ros_workspace.txt` and `colcon_build_options.yaml` to `.gitignore` (if not already present)
+4. Creates `.ros_workspace.txt` and `build.sh` script in Git repo root (if not exists)
+   - `.ros_workspace.txt`: stores workspace root path
+   - `build.sh`: build script with ccache support for faster compilation
+5. Adds generated files to `.gitignore` (if not already present)
 6. **Intelligent package discovery**:
    - Runs `colcon list --names-only` in current directory to find packages you're working on
    - Runs `colcon list --names-only` in workspace root to discover all packages
 7. Updates `colcon_build_options.yaml` by adding any missing packages with empty configuration
 8. Copies `colcon_build_options.yaml` to `<workspace_root>/colcon.meta`
-9. **Smart build execution**:
+9. **Smart build execution via build.sh**:
+   - Executes build through `build.sh` script with ccache enabled
    - If packages found in current directory: builds only those + dependencies with `--packages-up-to`
    - If no packages in current directory: builds entire workspace
    - User can override with explicit package selection arguments
+   - Displays ccache statistics after build completion
 
 ## Build Configuration
 
@@ -129,12 +133,44 @@ The plugin manages build options through `colcon_build_options.yaml` in your Git
 4. You can then customize build options for specific packages
 5. Changes take effect on the next build
 
+## Build Script (build.sh)
+
+The plugin automatically generates a `build.sh` script in your Git repository root with ccache support:
+
+### Features
+
+- **ccache integration**: Automatically sets `CC="ccache gcc"` and `CXX="ccache g++"` for faster recompilation
+- **Workspace-aware**: Reads workspace root from `.ros_workspace.txt`
+- **Statistics**: Displays ccache statistics after each build
+- **Standalone usage**: Can be used independently from Claude Code plugin
+
+### Example usage
+
+```bash
+# Auto-generated on first /colcon-build run
+./build.sh --packages-up-to my_package --symlink-install
+
+# The script will:
+# 1. Enable ccache
+# 2. Navigate to workspace root
+# 3. Run: colcon build --packages-up-to my_package --symlink-install
+# 4. Show ccache statistics
+```
+
+### Benefits
+
+- **Faster builds**: ccache caches compilation results, speeding up rebuilds significantly
+- **Consistent environment**: Same build settings across team members
+- **Easy to use**: Simple wrapper script with helpful error messages
+
 ## Requirements
 
 - ROS 2 installed
 - `colcon` build tool available in PATH
 - ROS 2 workspace with standard structure (must have `src/` directory)
 - Git repository initialized (command must be run from within a Git repository)
+- **Optional**: `ccache` installed for faster compilation (highly recommended)
+  - Install on Ubuntu: `sudo apt install ccache`
 
 ## License
 
