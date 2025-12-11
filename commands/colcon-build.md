@@ -92,16 +92,32 @@ Ensure `.ros_workspace.txt` and `colcon_build_options.yaml` are ignored by git:
     - If NOT present: Append `colcon_build_options.yaml` to `.gitignore`
   - Inform user with appropriate message about what was added
 
-### 4. Copy Build Options to colcon.meta
+### 4. Update colcon_build_options.yaml with Package List
 
-Before building, copy `colcon_build_options.yaml` to workspace:
+Discover packages and update configuration:
+
+- Change to the workspace root directory
+- Execute: `colcon list --names-only`
+- Parse the output to get list of all package names
+- Read `colcon_build_options.yaml` from Git repository root and parse as YAML/JSON
+- For each package name from `colcon list`:
+  - Check if package exists in `colcon_build_options.yaml` under `names` key
+  - If package does NOT exist:
+    - Add package entry to `names` with empty configuration: `"package_name": {}`
+- Write the updated content back to `colcon_build_options.yaml`
+- Inform user: "Updated colcon_build_options.yaml: added [N] new package(s)" (if any were added)
+- If no new packages: Inform user: "All packages already in colcon_build_options.yaml"
+
+### 5. Copy Build Options to colcon.meta
+
+Before building, copy updated configuration to workspace:
 
 - Read the content of `colcon_build_options.yaml` from Git repository root
 - Copy the content to `<workspace_root>/colcon.meta`
   - Overwrite if `colcon.meta` already exists
 - Inform user: "Copied colcon_build_options.yaml to [workspace-root]/colcon.meta"
 
-### 5. Execute Colcon Build
+### 6. Execute Colcon Build
 
 Run the colcon build command:
 
@@ -118,6 +134,8 @@ Run the colcon build command:
 - The command requires being run from within a Git repository
 - Use absolute paths when writing to .ros_workspace.txt
 - Preserve existing .gitignore content when adding new entries
+- Before each build, `colcon list --names-only` is executed to discover all packages
+- New packages are automatically added to `colcon_build_options.yaml` with empty configuration
 - `colcon_build_options.yaml` is copied to `<workspace_root>/colcon.meta` before every build
 - Run colcon build from the workspace root directory (detected automatically)
 - Pass through any arguments the user provides to the colcon build command

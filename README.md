@@ -43,14 +43,18 @@ With options:
    - Looks for `src/` directory without `package.xml` in parent
 4. Creates `.ros_workspace.txt` in Git repo root (if not exists) with workspace root path
 5. Adds `.ros_workspace.txt` and `colcon_build_options.yaml` to `.gitignore` (if not already present)
-6. Copies `colcon_build_options.yaml` to `<workspace_root>/colcon.meta`
-7. Executes `colcon build` with provided arguments
+6. Runs `colcon list --names-only` to discover all packages in workspace
+7. Updates `colcon_build_options.yaml` by adding any missing packages with empty configuration
+8. Copies `colcon_build_options.yaml` to `<workspace_root>/colcon.meta`
+9. Executes `colcon build` with provided arguments
 
 ## Build Configuration
 
 The plugin manages build options through `colcon_build_options.yaml` in your Git repository root:
 
 - **Automatic creation**: File is created with default template on first run
+- **Auto-discovery**: Runs `colcon list --names-only` before each build to discover packages
+- **Auto-update**: Automatically adds missing packages to the configuration file
 - **Git ignored**: Automatically added to `.gitignore` (local configuration)
 - **Applied before build**: Content is copied to `<workspace_root>/colcon.meta` before each build
 
@@ -68,12 +72,19 @@ The plugin manages build options through `colcon_build_options.yaml` in your Git
     },
     "another_package": {
       "cmake-args": ["-DBUILD_TESTING=OFF"]
-    }
+    },
+    "sensor_driver": {},
+    "controller_node": {}
   }
 }
 ```
 
-You can customize this file to set package-specific build options. Changes take effect on the next build.
+**How it works:**
+1. On first run, the file is created with an empty `names` object
+2. Each time you run `/colcon-build`, the plugin discovers all packages with `colcon list --names-only`
+3. Any packages not in the file are automatically added with empty configuration `{}`
+4. You can then customize build options for specific packages
+5. Changes take effect on the next build
 
 ## Requirements
 
