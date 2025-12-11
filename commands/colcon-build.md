@@ -13,11 +13,21 @@ Execute a ROS 2 colcon build with automatic workspace detection and configuratio
 
 ## Steps to Execute
 
+### 0. Find Git Repository Root
+
+First, find the Git repository root directory:
+
+- Traverse up from the current working directory to find the directory containing `.git`
+- Start from current directory and check each parent directory for `.git` directory or file
+- The first directory containing `.git` is the Git repository root
+- If no `.git` found, display error: "Error: Not in a Git repository. Please run this command from within a Git repository."
+- Store this path as the "file operation directory" for all `.ros_workspace.txt` and `.gitignore` operations
+
 ### 1. Find ROS 2 Workspace Root
 
-**First, check if `.ros_workspace.txt` exists in the current working directory:**
+**First, check if `.ros_workspace.txt` exists in the Git repository root:**
 
-- If `.ros_workspace.txt` exists:
+- If `.ros_workspace.txt` exists in the Git repository root:
   - Read the workspace root path from the file
   - Verify the path exists and is a valid directory
   - Use this path as the workspace root
@@ -38,23 +48,23 @@ Execute a ROS 2 colcon build with automatic workspace detection and configuratio
 
 Once workspace root is detected (only if file didn't exist):
 
-- Create `.ros_workspace.txt` in the **current working directory**
+- Create `.ros_workspace.txt` in the **Git repository root** (found in step 0)
 - Write the absolute path of the workspace root to this file
-- Inform user: "Created .ros_workspace.txt with workspace root: [path]"
+- Inform user: "Created .ros_workspace.txt in [git-repo-root] with workspace root: [workspace-path]"
 
 ### 3. Update .gitignore
 
 Ensure `.ros_workspace.txt` is ignored by git:
 
-- Check if `.gitignore` exists in the **current working directory**
+- Check if `.gitignore` exists in the **Git repository root** (found in step 0)
 - If `.gitignore` does not exist:
-  - Create `.gitignore` in the **current working directory** with content: `.ros_workspace.txt`
-  - Inform user: "Created .gitignore and added .ros_workspace.txt"
+  - Create `.gitignore` in the **Git repository root** with content: `.ros_workspace.txt`
+  - Inform user: "Created .gitignore in [git-repo-root] and added .ros_workspace.txt"
 - If `.gitignore` exists:
   - Read the file and check if `.ros_workspace.txt` is already present
   - If NOT present:
     - Append `.ros_workspace.txt` to `.gitignore`
-    - Inform user: "Added .ros_workspace.txt to .gitignore"
+    - Inform user: "Added .ros_workspace.txt to .gitignore in [git-repo-root]"
   - If already present:
     - Inform user: ".ros_workspace.txt already in .gitignore"
 
@@ -71,7 +81,8 @@ Run the colcon build command:
 
 ## Important Notes
 
-- All file operations (creating .ros_workspace.txt, modifying .gitignore) should happen in the **current working directory**, not the workspace root
+- All file operations (creating .ros_workspace.txt, modifying .gitignore) should happen in the **Git repository root** (directory containing .git), not the current working directory or workspace root
+- The command requires being run from within a Git repository
 - Use absolute paths when writing to .ros_workspace.txt
 - Preserve existing .gitignore content when adding new entries
 - Run colcon build from the workspace root directory (detected automatically)

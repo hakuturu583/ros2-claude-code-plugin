@@ -37,17 +37,19 @@ With options:
 
 **What it does:**
 
-1. Traverses up from current directory to find ROS 2 workspace root
+1. Finds Git repository root (directory containing `.git`)
+2. Checks for `.ros_workspace.txt` in Git repo root, or traverses up to find ROS 2 workspace root
    - Looks for `src/` directory without `package.xml` in parent
-2. Creates `.ros_workspace.txt` (if not exists) with workspace root path
-3. Adds `.ros_workspace.txt` to `.gitignore` (if not already present)
-4. Executes `colcon build` with provided arguments
+3. Creates `.ros_workspace.txt` in Git repo root (if not exists) with workspace root path
+4. Adds `.ros_workspace.txt` to `.gitignore` in Git repo root (if not already present)
+5. Executes `colcon build` with provided arguments
 
 ## Requirements
 
 - ROS 2 installed
 - `colcon` build tool available in PATH
 - ROS 2 workspace with standard structure (must have `src/` directory)
+- Git repository initialized (command must be run from within a Git repository)
 
 ## License
 
