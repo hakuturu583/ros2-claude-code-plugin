@@ -1,0 +1,9 @@
+{
+  "name": "ros2-workspace",
+  "version": "0.1.0",
+  "description": "ROS 2 workspace management plugin with colcon build automation",
+  "author": {
+    "name": "Claude Code User"
+  },
+  "keywords": ["ros2", "colcon", "workspace", "build"]
+}
