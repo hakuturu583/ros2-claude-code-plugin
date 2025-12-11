@@ -92,13 +92,21 @@ Ensure `.ros_workspace.txt` and `colcon_build_options.yaml` are ignored by git:
     - If NOT present: Append `colcon_build_options.yaml` to `.gitignore`
   - Inform user with appropriate message about what was added
 
-### 4. Update colcon_build_options.yaml with Package List
+### 4. Discover Packages in Current Directory and Update Configuration
 
-Discover packages and update configuration:
+Discover packages in current working directory and workspace:
 
+**4a. Find packages in current working directory:**
+- Execute `colcon list --names-only` in the **current working directory** (where Claude Code was started)
+- Parse the output to get list of package names in current directory
+- Store this list as "current_directory_packages"
+- If packages found: Inform user: "Found [N] package(s) in current directory: [package names]"
+- If no packages found: Inform user: "No packages found in current directory, will build entire workspace"
+
+**4b. Update colcon_build_options.yaml with all workspace packages:**
 - Change to the workspace root directory
 - Execute: `colcon list --names-only`
-- Parse the output to get list of all package names
+- Parse the output to get list of all package names in workspace
 - Read `colcon_build_options.yaml` from Git repository root and parse as YAML/JSON
 - For each package name from `colcon list`:
   - Check if package exists in `colcon_build_options.yaml` under `names` key
@@ -106,7 +114,6 @@ Discover packages and update configuration:
     - Add package entry to `names` with empty configuration: `"package_name": {}`
 - Write the updated content back to `colcon_build_options.yaml`
 - Inform user: "Updated colcon_build_options.yaml: added [N] new package(s)" (if any were added)
-- If no new packages: Inform user: "All packages already in colcon_build_options.yaml"
 
 ### 5. Copy Build Options to colcon.meta
 
@@ -119,12 +126,28 @@ Before building, copy updated configuration to workspace:
 
 ### 6. Execute Colcon Build
 
-Run the colcon build command:
+Run the colcon build command with intelligent package selection:
 
 - Change to the workspace root directory
-- Execute: `colcon build [user-provided-arguments]`
-  - If user provided arguments (e.g., `--symlink-install`, `--packages-select pkg`), pass them to colcon
-  - If no arguments provided, just run `colcon build`
+- Determine build command based on user arguments and current directory packages:
+
+  **Case 1: User provided package selection arguments**
+  - If user arguments contain `--packages-select`, `--packages-up-to`, `--packages-skip`, or `--packages-above`:
+    - Use user-provided arguments as-is: `colcon build [user-provided-arguments]`
+    - Inform user: "Building with user-specified package selection"
+
+  **Case 2: Packages found in current directory (no user package selection)**
+  - If "current_directory_packages" is not empty AND user did not specify package selection:
+    - Build with `--packages-up-to` for current directory packages
+    - Command: `colcon build --packages-up-to [current_directory_packages] [other-user-arguments]`
+    - Example: `colcon build --packages-up-to pkg1 pkg2 pkg3 --symlink-install`
+    - Inform user: "Building packages in current directory and their dependencies: [package names]"
+
+  **Case 3: No packages in current directory (no user package selection)**
+  - If "current_directory_packages" is empty AND user did not specify package selection:
+    - Build entire workspace: `colcon build [user-provided-arguments]`
+    - Inform user: "Building entire workspace"
+
 - Display the output of the build process to the user
 - If build fails, show the error and exit code
 
@@ -134,7 +157,11 @@ Run the colcon build command:
 - The command requires being run from within a Git repository
 - Use absolute paths when writing to .ros_workspace.txt
 - Preserve existing .gitignore content when adding new entries
-- Before each build, `colcon list --names-only` is executed to discover all packages
+- **Intelligent package selection**:
+  - `colcon list --names-only` is executed in both current directory and workspace root
+  - If packages are found in current directory, automatically builds only those packages and dependencies with `--packages-up-to`
+  - If no packages in current directory, builds entire workspace
+  - User can override with explicit `--packages-select` or `--packages-up-to` arguments
 - New packages are automatically added to `colcon_build_options.yaml` with empty configuration
 - `colcon_build_options.yaml` is copied to `<workspace_root>/colcon.meta` before every build
 - Run colcon build from the workspace root directory (detected automatically)

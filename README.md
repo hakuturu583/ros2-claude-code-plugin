@@ -35,6 +35,44 @@ With options:
 /colcon-build --symlink-install --packages-select my_package
 ```
 
+### Smart Package Selection
+
+The plugin automatically determines which packages to build based on your current directory:
+
+**Scenario 1: Working on specific package**
+```bash
+# Navigate to package directory
+cd ~/ros2_ws/src/my_robot_package
+
+# Start Claude Code and run build
+cc
+/colcon-build
+
+# Result: Only builds my_robot_package and its dependencies
+# Command executed: colcon build --packages-up-to my_robot_package
+```
+
+**Scenario 2: Working in workspace root**
+```bash
+# Navigate to workspace root
+cd ~/ros2_ws
+
+# Start Claude Code and run build
+cc
+/colcon-build
+
+# Result: Builds entire workspace
+# Command executed: colcon build
+```
+
+**Scenario 3: Override with explicit package selection**
+```bash
+# From any directory, you can override
+/colcon-build --packages-select specific_package
+
+# Result: Builds only specific_package (not its dependencies)
+```
+
 **What it does:**
 
 1. Finds Git repository root (directory containing `.git`)
@@ -43,10 +81,15 @@ With options:
    - Looks for `src/` directory without `package.xml` in parent
 4. Creates `.ros_workspace.txt` in Git repo root (if not exists) with workspace root path
 5. Adds `.ros_workspace.txt` and `colcon_build_options.yaml` to `.gitignore` (if not already present)
-6. Runs `colcon list --names-only` to discover all packages in workspace
+6. **Intelligent package discovery**:
+   - Runs `colcon list --names-only` in current directory to find packages you're working on
+   - Runs `colcon list --names-only` in workspace root to discover all packages
 7. Updates `colcon_build_options.yaml` by adding any missing packages with empty configuration
 8. Copies `colcon_build_options.yaml` to `<workspace_root>/colcon.meta`
-9. Executes `colcon build` with provided arguments
+9. **Smart build execution**:
+   - If packages found in current directory: builds only those + dependencies with `--packages-up-to`
+   - If no packages in current directory: builds entire workspace
+   - User can override with explicit package selection arguments
 
 ## Build Configuration
 
