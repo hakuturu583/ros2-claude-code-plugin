@@ -135,7 +135,7 @@ The plugin manages build options through `colcon_build_options.yaml` in your Git
 
 ## Build Script (build.sh)
 
-The plugin automatically generates a `build.sh` script in your Git repository root with ccache support:
+The plugin automatically generates and updates a `build.sh` script on every run in your Git repository root with ccache support:
 
 ### Features
 
@@ -147,7 +147,7 @@ The plugin automatically generates a `build.sh` script in your Git repository ro
 ### Example usage
 
 ```bash
-# Auto-generated on first /colcon-build run
+# Auto-generated and updated on every /colcon-build run
 ./build.sh --packages-up-to my_package --symlink-install
 
 # The script will:

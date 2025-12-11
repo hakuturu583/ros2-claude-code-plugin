@@ -65,16 +65,20 @@ Check and create colcon build options file in Git repository root:
   - The first directory meeting both conditions is the workspace root
 - If no workspace root found, display error: "Error: Could not find ROS 2 workspace root. Make sure you're inside a ROS 2 workspace with a 'src/' directory."
 
-### 2. Create .ros_workspace.txt and build.sh Files
+### 2. Create/Update .ros_workspace.txt and build.sh Files
 
-Once workspace root is detected (only if files didn't exist):
+Once workspace root is detected:
 
-**2a. Create .ros_workspace.txt:**
-- Create `.ros_workspace.txt` in the **Git repository root** (found in step 0)
-- Write the absolute path of the workspace root to this file
-- Inform user: "Created .ros_workspace.txt in [git-repo-root] with workspace root: [workspace-path]"
+**2a. Create/Update .ros_workspace.txt:**
+- Check if `.ros_workspace.txt` exists in the **Git repository root** (found in step 0)
+- If it does NOT exist:
+  - Create `.ros_workspace.txt` in the **Git repository root**
+  - Write the absolute path of the workspace root to this file
+  - Inform user: "Created .ros_workspace.txt in [git-repo-root] with workspace root: [workspace-path]"
+- If it exists:
+  - Inform user: "Using existing .ros_workspace.txt in [git-repo-root]"
 
-**2b. Create build.sh script:**
+**2b. Create/Update build.sh script:**
 - Create `build.sh` in the **Git repository root** (found in step 0)
 - Write the following shell script content:
   ```bash
@@ -136,7 +140,7 @@ Once workspace root is detected (only if files didn't exist):
   fi
   ```
 - Make the script executable: `chmod +x build.sh`
-- Inform user: "Created build.sh script in [git-repo-root]"
+- Inform user: "Updated build.sh script in [git-repo-root]" (always update to ensure latest version)
 
 ### 3. Update .gitignore
 
@@ -231,7 +235,8 @@ Run the colcon build command through the build.sh script with intelligent packag
 - Use absolute paths when writing to .ros_workspace.txt
 - Preserve existing .gitignore content when adding new entries
 - **build.sh script**:
-  - Auto-generated on first run and stored in Git repository root
+  - Auto-generated and **updated on every run** to ensure latest version
+  - Stored in Git repository root
   - Enables ccache for faster compilation (CC="ccache gcc", CXX="ccache g++")
   - Reads workspace root from .ros_workspace.txt
   - Displays ccache statistics after build completion
