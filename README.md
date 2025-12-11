@@ -1,13 +1,15 @@
 # ROS 2 Workspace Plugin
 
-Claude Code plugin for ROS 2 workspace management and colcon build automation.
+Claude Code plugin for ROS 2 workspace management with colcon build and test automation.
 
 ## Features
 
 - **Automatic workspace detection**: Finds ROS 2 workspace root by traversing up directories
 - **Workspace tracking**: Creates `.ros_workspace.txt` with workspace root path
-- **Git integration**: Automatically adds `.ros_workspace.txt` to `.gitignore`
-- **Colcon build**: Executes `colcon build` with optional arguments
+- **Git integration**: Automatically adds generated files to `.gitignore`
+- **Colcon build**: Executes `colcon build` with ccache support via `build.sh`
+- **Colcon test**: Executes `colcon test` with automatic result display via `test.sh`
+- **Smart package selection**: Automatically builds/tests only packages in current directory
 
 ## Installation
 
@@ -35,21 +37,41 @@ With options:
 /colcon-build --symlink-install --packages-select my_package
 ```
 
+### `/colcon-test` command
+
+Execute colcon test with automatic workspace detection and result display:
+
+```bash
+/colcon-test
+```
+
+With options:
+
+```bash
+/colcon-test --packages-select my_package
+/colcon-test --packages-up-to my_package
+/colcon-test --retest-until-pass 3
+```
+
 ### Smart Package Selection
 
-The plugin automatically determines which packages to build based on your current directory:
+The plugin automatically determines which packages to build/test based on your current directory:
 
 **Scenario 1: Working on specific package**
 ```bash
 # Navigate to package directory
 cd ~/ros2_ws/src/my_robot_package
 
-# Start Claude Code and run build
+# Start Claude Code
 cc
-/colcon-build
 
-# Result: Only builds my_robot_package and its dependencies
-# Command executed: colcon build --packages-up-to my_robot_package
+# Build only this package and dependencies
+/colcon-build
+# Result: colcon build --packages-up-to my_robot_package
+
+# Test only this package and dependencies
+/colcon-test
+# Result: colcon test --packages-up-to my_robot_package
 ```
 
 **Scenario 2: Working in workspace root**
@@ -57,20 +79,26 @@ cc
 # Navigate to workspace root
 cd ~/ros2_ws
 
-# Start Claude Code and run build
+# Start Claude Code
 cc
-/colcon-build
 
-# Result: Builds entire workspace
-# Command executed: colcon build
+# Build entire workspace
+/colcon-build
+# Result: colcon build
+
+# Test entire workspace
+/colcon-test
+# Result: colcon test
 ```
 
 **Scenario 3: Override with explicit package selection**
 ```bash
 # From any directory, you can override
 /colcon-build --packages-select specific_package
-
 # Result: Builds only specific_package (not its dependencies)
+
+/colcon-test --packages-select specific_package
+# Result: Tests only specific_package (not its dependencies)
 ```
 
 **What it does:**
@@ -133,11 +161,15 @@ The plugin manages build options through `colcon_build_options.yaml` in your Git
 4. You can then customize build options for specific packages
 5. Changes take effect on the next build
 
-## Build Script (build.sh)
+## Generated Scripts
 
-The plugin automatically generates and updates a `build.sh` script on every run in your Git repository root with ccache support:
+The plugin automatically generates and updates helper scripts in your Git repository root:
 
-### Features
+### Build Script (build.sh)
+
+Automatically generated and updated on every `/colcon-build` run with ccache support:
+
+#### Features
 
 - **Smart ccache integration**: Automatically detects and uses ccache if installed
 - **Helpful warnings**: Displays installation instructions if ccache is not found
@@ -146,7 +178,7 @@ The plugin automatically generates and updates a `build.sh` script on every run 
 - **Statistics**: Displays ccache statistics after each build (when ccache is used)
 - **Standalone usage**: Can be used independently from Claude Code plugin
 
-### Example usage
+#### Example usage
 
 ```bash
 # Auto-generated and updated on every /colcon-build run
@@ -174,13 +206,61 @@ To install ccache:
 Continuing without ccache...
 ```
 
-### Benefits
+#### Benefits
 
 - **Faster builds**: ccache caches compilation results, speeding up rebuilds significantly (when installed)
 - **Works everywhere**: Falls back gracefully to normal compilation without ccache
 - **User-friendly**: Clear warnings and installation instructions when ccache is missing
 - **Consistent environment**: Same build settings across team members
 - **Easy to use**: Simple wrapper script with helpful error messages
+
+### Test Script (test.sh)
+
+Automatically generated and updated on every `/colcon-test` run:
+
+#### Features
+
+- **Automatic test execution**: Runs `colcon test` with provided arguments
+- **Result display**: Automatically shows test results with `colcon test-result --all`
+- **Workspace-aware**: Reads workspace root from `.ros_workspace.txt`
+- **Error handling**: Validates workspace setup before running tests
+- **Standalone usage**: Can be used independently from Claude Code plugin
+
+#### Example usage
+
+```bash
+# Auto-generated and updated on every /colcon-test run
+./test.sh --packages-up-to my_package
+
+# The script will:
+# 1. Verify .ros_workspace.txt exists
+# 2. Navigate to workspace root
+# 3. Run: colcon test --packages-up-to my_package
+# 4. Display test results with colcon test-result --all
+```
+
+Example output:
+```
+Testing ROS 2 workspace...
+Workspace: /home/user/ros2_ws
+
+Running: colcon test --packages-up-to my_package
+
+[Test execution...]
+
+Test completed!
+
+Viewing test results...
+Summary: 15 tests, 0 errors, 0 failures, 0 skipped
+```
+
+#### Benefits
+
+- **Automatic result display**: No need to manually run `colcon test-result`
+- **Clear feedback**: See test results immediately after execution
+- **Consistent testing**: Same test process across team members
+- **Easy to use**: Simple wrapper script with helpful error messages
+- **Works everywhere**: Requires only colcon and ROS 2 installation
 
 ## Requirements
 
