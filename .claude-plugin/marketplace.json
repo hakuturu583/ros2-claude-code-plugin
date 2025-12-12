@@ -1,123 +1,132 @@
 {
-  "name": "ros2-workspace",
-  "displayName": "ROS 2 Workspace Manager",
-  "description": "Complete ROS 2 workspace management with intelligent build/test automation, ccache support, and smart package selection",
-  "version": "0.1.0",
-  "author": {
+  "owner": {
     "name": "Masaya Kataoka",
     "email": "ms.kataoka@gmail.com",
     "url": "https://github.com/hakuturu583"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hakuturu583/ros2-claude-code-plugin.git"
-  },
-  "homepage": "https://github.com/hakuturu583/ros2-claude-code-plugin",
-  "license": "MIT",
-  "keywords": [
-    "ros2",
-    "robotics",
-    "colcon",
-    "build",
-    "test",
-    "workspace",
-    "automation",
-    "ccache",
-    "development"
-  ],
-  "category": "Development Tools",
-  "icon": "🤖",
-  "readme": "README.md",
-  "commands": [
+  "plugins": [
     {
-      "name": "/colcon-build",
-      "description": "Build ROS 2 packages with ccache support and smart package selection"
-    },
-    {
-      "name": "/colcon-test",
-      "description": "Run ROS 2 tests with automatic result display"
-    },
-    {
-      "name": "/colcon-test-result",
-      "description": "Display detailed test results without re-running tests"
-    }
-  ],
-  "features": [
-    "Automatic workspace detection",
-    "Smart package selection based on current directory",
-    "ccache integration for faster builds",
-    "Automatic test result display",
-    "Git integration with .gitignore management",
-    "Build configuration management via colcon_build_options.yaml",
-    "Directory preservation - always returns to original directory"
-  ],
-  "requirements": {
-    "ros2": "Required - Any ROS 2 distribution (Humble, Iron, Jazzy, Rolling)",
-    "colcon": "Required - Colcon build tool",
-    "git": "Required - Git repository",
-    "ccache": "Optional but recommended - Significantly speeds up rebuilds"
-  },
-  "installation": {
-    "prerequisites": [
-      "ROS 2 installed and sourced",
-      "colcon build tool available in PATH",
-      "Git repository initialized in your ROS 2 workspace",
-      "Optional: ccache installed (sudo apt install ccache)"
-    ],
-    "notes": [
-      "First run will create .ros_workspace.txt, build.sh, and colcon_build_options.yaml",
-      "All generated files are automatically added to .gitignore",
-      "Scripts are updated on every run to ensure latest version"
-    ]
-  },
-  "quickstart": {
-    "steps": [
-      "Navigate to your ROS 2 workspace: cd ~/ros2_ws",
-      "Initialize git if not already: git init",
-      "Start Claude Code with the plugin",
-      "Run /colcon-build to set up workspace and build",
-      "Run /colcon-test to execute tests",
-      "Run /colcon-test-result to view detailed results"
-    ],
-    "examples": [
-      {
-        "title": "Build specific package",
-        "description": "Navigate to package directory and build only that package with dependencies",
-        "commands": [
-          "cd ~/ros2_ws/src/my_package",
-          "/colcon-build"
-        ]
-      },
-      {
-        "title": "Test with retry",
-        "description": "Run tests with automatic retry on failure",
-        "commands": [
-          "/colcon-test --retest-until-pass 3"
-        ]
-      },
-      {
-        "title": "View test results",
-        "description": "Display detailed test results from any directory",
-        "commands": [
-          "/colcon-test-result --all"
-        ]
-      }
-    ]
-  },
-  "changelog": [
-    {
+      "name": "ros2-workspace",
+      "displayName": "ROS 2 Workspace Manager",
+      "description": "Complete ROS 2 workspace management with intelligent build/test automation, ccache support, and smart package selection",
       "version": "0.1.0",
-      "date": "2025-12-12",
-      "changes": [
-        "Initial release",
-        "Added /colcon-build command with ccache support",
-        "Added /colcon-test command with automatic result display",
-        "Added /colcon-test-result command for viewing results",
-        "Implemented smart package selection",
-        "Added automatic workspace detection",
-        "Implemented directory preservation for all commands",
-        "Added colcon_build_options.yaml for build configuration",
-        "Automatic script generation (build.sh, test.sh)"
+      "author": {
+        "name": "Masaya Kataoka",
+        "email": "ms.kataoka@gmail.com",
+        "url": "https://github.com/hakuturu583"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/hakuturu583/ros2-claude-code-plugin.git"
+      },
+      "homepage": "https://github.com/hakuturu583/ros2-claude-code-plugin",
+      "license": "MIT",
+      "keywords": [
+        "ros2",
+        "robotics",
+        "colcon",
+        "build",
+        "test",
+        "workspace",
+        "automation",
+        "ccache",
+        "development"
+      ],
+      "category": "Development Tools",
+      "icon": "🤖",
+      "readme": "README.md",
+      "commands": [
+        {
+          "name": "/colcon-build",
+          "description": "Build ROS 2 packages with ccache support and smart package selection"
+        },
+        {
+          "name": "/colcon-test",
+          "description": "Run ROS 2 tests with automatic result display"
+        },
+        {
+          "name": "/colcon-test-result",
+          "description": "Display detailed test results without re-running tests"
+        }
+      ],
+      "features": [
+        "Automatic workspace detection",
+        "Smart package selection based on current directory",
+        "ccache integration for faster builds",
+        "Automatic test result display",
+        "Git integration with .gitignore management",
+        "Build configuration management via colcon_build_options.yaml",
+        "Directory preservation - always returns to original directory"
+      ],
+      "requirements": {
+        "ros2": "Required - Any ROS 2 distribution (Humble, Iron, Jazzy, Rolling)",
+        "colcon": "Required - Colcon build tool",
+        "git": "Required - Git repository",
+        "ccache": "Optional but recommended - Significantly speeds up rebuilds"
+      },
+      "installation": {
+        "prerequisites": [
+          "ROS 2 installed and sourced",
+          "colcon build tool available in PATH",
+          "Git repository initialized in your ROS 2 workspace",
+          "Optional: ccache installed (sudo apt install ccache)"
+        ],
+        "notes": [
+          "First run will create .ros_workspace.txt, build.sh, and colcon_build_options.yaml",
+          "All generated files are automatically added to .gitignore",
+          "Scripts are updated on every run to ensure latest version"
+        ]
+      },
+      "quickstart": {
+        "steps": [
+          "Navigate to your ROS 2 workspace: cd ~/ros2_ws",
+          "Initialize git if not already: git init",
+          "Start Claude Code with the plugin",
+          "Run /colcon-build to set up workspace and build",
+          "Run /colcon-test to execute tests",
+          "Run /colcon-test-result to view detailed results"
+        ],
+        "examples": [
+          {
+            "title": "Build specific package",
+            "description": "Navigate to package directory and build only that package with dependencies",
+            "commands": [
+              "cd ~/ros2_ws/src/my_package",
+              "/colcon-build"
+            ]
+          },
+          {
+            "title": "Test with retry",
+            "description": "Run tests with automatic retry on failure",
+            "commands": [
+              "/colcon-test --retest-until-pass 3"
+            ]
+          },
+          {
+            "title": "View test results",
+            "description": "Display detailed test results from any directory",
+            "commands": [
+              "/colcon-test-result --all"
+            ]
+          }
+        ]
+      },
+      "changelog": [
+        {
+          "version": "0.1.0",
+          "date": "2025-12-12",
+          "changes": [
+            "Initial release",
+            "Added /colcon-build command with ccache support",
+            "Added /colcon-test command with automatic result display",
+            "Added /colcon-test-result command for viewing results",
+            "Implemented smart package selection",
+            "Added automatic workspace detection",
+            "Implemented directory preservation for all commands",
+            "Added colcon_build_options.yaml for build configuration",
+            "Automatic script generation (build.sh, test.sh)"
+          ]
+        }
       ]
     }
   ]
