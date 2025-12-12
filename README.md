@@ -15,9 +15,34 @@ Claude Code plugin for ROS 2 workspace management with colcon build and test aut
 
 ## Installation
 
-Copy this plugin to your Claude Code plugins directory or use it locally:
+### From Marketplace (Recommended)
+
+Install directly from the Claude Code plugin marketplace:
 
 ```bash
+# Search for the plugin
+cc plugin search ros2
+
+# Install the plugin
+cc plugin install ros2-workspace
+
+# The plugin will be automatically available in all your projects
+```
+
+### Manual Installation
+
+#### Option 1: Clone from GitHub
+
+```bash
+# Clone to Claude Code plugins directory
+mkdir -p ~/.claude/plugins
+git clone https://github.com/hakuturu583/ros2-claude-code-plugin.git ~/.claude/plugins/ros2-workspace
+```
+
+#### Option 2: Local Development
+
+```bash
+# Use plugin from local directory
 cc --plugin-dir /path/to/ros2-claude-code-plugin
 ```
 

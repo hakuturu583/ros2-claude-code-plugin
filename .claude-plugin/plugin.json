@@ -1,9 +1,17 @@
 {
   "name": "ros2-workspace",
   "version": "0.1.0",
-  "description": "ROS 2 workspace management plugin with colcon build automation",
+  "description": "Complete ROS 2 workspace management with intelligent build/test automation, ccache support, and smart package selection",
   "author": {
-    "name": "Claude Code User"
+    "name": "Masaya Kataoka",
+    "email": "ms.kataoka@gmail.com",
+    "url": "https://github.com/hakuturu583"
   },
-  "keywords": ["ros2", "colcon", "workspace", "build"]
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hakuturu583/ros2-claude-code-plugin.git"
+  },
+  "homepage": "https://github.com/hakuturu583/ros2-claude-code-plugin",
+  "license": "MIT",
+  "keywords": ["ros2", "robotics", "colcon", "build", "test", "workspace", "automation", "ccache", "development"]
 }
